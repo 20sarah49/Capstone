@@ -10,14 +10,19 @@ import spgl
 class Player(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
 		spgl.Sprite.__init__(self, shape, color, x, y)
+		
+class Obstacle(spgl.Sprite):
+	def __init__(self, shape, color, x, y):
+		spgl.Sprite.__init__(self, shape, color, x, y)
 	
 # Create Functions
 
 # Initial Game setup
-game = spgl.Game(800, 600, "black", "Capstone Project by Sarah G.", 0)
+game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah G.", 0)
 
 # Create Sprites
 player = Player("circle", "white", -100, 0)
+obstacle = Obstacle("square", "red", 100, 0)
 
 # Create Labels
 
