@@ -14,6 +14,28 @@ class Player(spgl.Sprite):
 class Obstacle(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
 		spgl.Sprite.__init__(self, shape, color, x, y)
+		self.speed = 4
+		self.lt(180)
+	
+	def tick(self):
+		self.move()
+			
+	def move(self):
+		self.fd(self.speed)
+	
+#Child Classes
+class Shark(Obstacle):
+	def __init__(self, shape, color, x, y):
+		Obstacle.__init__(self, shape, color, x, y)
+		
+class Powerup(Obstacle):
+	def __init__(self, shape, color, x, y):
+		Obstacle.__init__(self, shape, color, x, y)
+	
+class Seaweed(Obstacle):
+	def __init__(self, shape, color, x, y):
+		Obstacle.__init__(self, shape, color, x, y)
+			
 	
 # Create Functions
 
@@ -22,7 +44,9 @@ game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah G.", 0)
 
 # Create Sprites
 player = Player("circle", "white", -100, 0)
-obstacle = Obstacle("square", "red", 100, 0)
+shark = Shark("square", "red", 100, 0)
+powerup = Powerup("square", "orange", 100, -100)
+seaweed = Seaweed("square", "grey", 100, 100)
 
 # Create Labels
 
@@ -32,4 +56,8 @@ obstacle = Obstacle("square", "red", 100, 0)
 
 while True:
     # Call the game tick method
-    game.tick()
+	game.tick()
+
+	shark.tick()
+	powerup.tick()
+	seaweed.tick()
