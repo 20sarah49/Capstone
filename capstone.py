@@ -27,7 +27,7 @@ class Player(spgl.Sprite):
 class Obstacle(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
 		spgl.Sprite.__init__(self, shape, color, x, y)
-		self.speed = 4
+		self.speed = random.randint(3,6)
 		self.lt(180)
 	
 	def tick(self):
@@ -38,16 +38,14 @@ class Obstacle(spgl.Sprite):
 		
 		
 		if self.xcor() <= -375:
-			self.setx(375)
+			self.setx(random.randint(0,350))
 			y_cors = [-200, 0, 200]
 			self.sety(random.choice(y_cors))
 	
 #Child Classes
 class Shark(Obstacle):
 	def __init__(self, shape, color, x, y):
-		Obstacle.__init__(self, shape, color, x, y)
-		
-		
+		Obstacle.__init__(self, shape, color, x, y)	
 		
 class Powerup(Obstacle):
 	def __init__(self, shape, color, x, y):
