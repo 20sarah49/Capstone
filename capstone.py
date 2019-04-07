@@ -6,6 +6,7 @@
 # Import SPGL
 import spgl
 import random 
+import time
 
 # Create Classes
 class Player(spgl.Sprite):
@@ -79,8 +80,24 @@ class Seaweed(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
 			
+# Fire ball class	
+class Fireball(spgl.Sprite):
+	def __init__(self, shape, color, x, y):
+		spgl.Sprite.__init__(self, shape, color, x, y)
+		self.speed = 6
+		self.lt(0)
 	
+	def tick(self):
+		self.move()
+		
+	def move(self):
+		self.fd(self.speed)
+
 # Create Functions
+def shoot_fireball():
+	fireball = Fireball("circle", "red", player.xcor(), player.ycor())
+	
+	fireball.tick()
 
 # Initial Game setup
 game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 0)
@@ -107,7 +124,6 @@ distance_label = spgl.Label("Distance From Shore: {}".format(player.distance), "
 # Set Keyboard Bindings
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
 game.set_keyboard_binding(spgl.KEY_DOWN, player.move_down)
-
 
 while True:
 	game_over = False
@@ -138,6 +154,7 @@ while True:
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("POWERUP COLLISION")
+				game.set_keyboard_binding(spgl.KEY_SPACE, shoot_fireball)
 		if isinstance(sprite, Seaweed):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
