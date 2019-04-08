@@ -15,7 +15,8 @@ class Player(spgl.Sprite):
 		self.distance = distance
 		self.speed = 0.5
 		self.y_destination = 0
-		
+		self.powerup = 0
+				
 	def move_up(self):
 		if self.ycor() < 200:
 			#self.goto(self.xcor(), self.ycor()+200)
@@ -45,6 +46,26 @@ class Player(spgl.Sprite):
 			self.sety(self.ycor() + 10)
 		elif self.ycor() > self.y_destination:
 			self.sety(self.ycor() - 10)
+			
+		
+	# Fireball shoot function
+	def shoot_fireball(self):
+		if self.powerup > 0:
+			fireball = Fireball("circle", "red", player.xcor(), player.ycor())
+			self.powerup -= 1
+			print(self.powerup)
+		
+			# Make Fireball move
+			fireball.tick()
+			
+	# Speed Lag
+	def speedlag(self):
+		self.speed = 0
+		canvas = spgl.turtle.getcanvas()
+		canvas.after(2000, self.speed_to_normal)
+		
+	def speed_to_normal(self):
+		self.speed = 0.5	
 		
 class Obstacle(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -92,12 +113,13 @@ class Fireball(spgl.Sprite):
 		
 	def move(self):
 		self.fd(self.speed)
+		
+		if self.xcor() >= 380:
+			self.destroy()
 
 # Create Functions
-def shoot_fireball():
-	fireball = Fireball("circle", "red", player.xcor(), player.ycor())
-	
-	fireball.tick()
+
+			
 
 # Initial Game setup
 game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 0)
@@ -124,6 +146,7 @@ distance_label = spgl.Label("Distance From Shore: {}".format(player.distance), "
 # Set Keyboard Bindings
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
 game.set_keyboard_binding(spgl.KEY_DOWN, player.move_down)
+game.set_keyboard_binding(spgl.KEY_SPACE, player.shoot_fireball)
 
 while True:
 	game_over = False
@@ -150,15 +173,29 @@ while True:
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("GAME OVER: SHARK COLLISION")
 				game_over = True
+
 		if isinstance(sprite, Powerup):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("POWERUP COLLISION")
-				game.set_keyboard_binding(spgl.KEY_SPACE, shoot_fireball)
+				player.powerup = 5
+
 		if isinstance(sprite, Seaweed):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("SEAWEED COLLISION")
+				player.speedlag()
+	
+	# Check for Power-up and Shark Collisions
+	for sprite1 in game.sprites:
+		if isinstance(sprite1, Shark):
+			for sprite2 in game.sprites:
+				if isinstance(sprite2, Fireball):
+					if game.is_collision(sprite1, sprite2):
+						sprite1.goto(random.randint(350, 600), random.choice(y_cors))
+						sprite2.destroy()
+						print("SHARK AND FIREBALL")
+			
 	
 	# Game over when Distance is 0
 	if player.distance == 0 :
