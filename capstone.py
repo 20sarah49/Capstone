@@ -6,7 +6,6 @@
 # Import SPGL
 import spgl
 import random 
-import time
 
 # Create Classes
 class Player(spgl.Sprite):
@@ -37,9 +36,8 @@ class Player(spgl.Sprite):
 		# Move right
 		self.setx(self.xcor() + self.speed)
 		# Distance
-		self.distance -= 0.5
-		#if ((self.distance/0.5)%2) == 0:
-			#distance = self.distance
+		self.distance -= self.speed
+
 
 		# Move the player
 		if self.ycor() < self.y_destination:
@@ -51,7 +49,7 @@ class Player(spgl.Sprite):
 	# Fireball shoot function
 	def shoot_fireball(self):
 		if self.powerup > 0:
-			fireball = Fireball("circle", "red", player.xcor(), player.ycor())
+			fireball = Fireball("circle", "orangered", player.xcor(), player.ycor())
 			self.powerup -= 1
 			print(self.powerup)
 		
@@ -60,12 +58,12 @@ class Player(spgl.Sprite):
 			
 	# Speed Lag
 	def speedlag(self):
-		self.speed = 0
+		self.speed -= 0.25
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
 	def speed_to_normal(self):
-		self.speed = 0.5	
+		self.speed += 0.25	
 		
 class Obstacle(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -119,29 +117,26 @@ class Fireball(spgl.Sprite):
 
 # Create Functions
 
-			
-
 # Initial Game setup
 game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 0)
 
 # Create Sprites
-player = Player("triangle", "white", -350, 0, 700)
+player = Player("triangle", "mediumvioletred", -350, 0, 700)
 sharks = []
 powerups = []
 seaweeds = []
 y_cors = [-200, 0, 200]
-# Create multiple
+# Create multiple sprites per class
 for i in range(0,2):
-	shark = Shark("square", "grey", random.randint(350, 600), random.choice(y_cors))
+	shark = Shark("square", "dimgray", random.randint(350, 600), random.choice(y_cors))
 	sharks.append(shark)
-	powerup = Powerup("square", "orange", random.randint(350, 600), random.choice(y_cors))
+	powerup = Powerup("square", "gold", random.randint(350, 600), random.choice(y_cors))
 	powerups.append(powerup)
-	seaweed = Seaweed("square", "green", random.randint(350, 600), random.choice(y_cors))
+	seaweed = Seaweed("square", "seagreen", random.randint(350, 600), random.choice(y_cors))
 	seaweeds.append(seaweed)
 	
 # Create Labels
 distance_label = spgl.Label("Distance From Shore: {}".format(player.distance), "white", -380, 280)
-# Create Buttons
 
 # Set Keyboard Bindings
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
@@ -161,8 +156,8 @@ while True:
 	for seaweed in seaweeds:
 		seaweed.tick()
 		
-	
 	player.tick()
+	
 	# Update Label 
 	distance_label.update("Distance From Shore: {}".format(player.distance))
 	
@@ -185,7 +180,7 @@ while True:
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("SEAWEED COLLISION")
 				player.speedlag()
-	
+
 	# Check for Power-up and Shark Collisions
 	for sprite1 in game.sprites:
 		if isinstance(sprite1, Shark):
@@ -195,7 +190,6 @@ while True:
 						sprite1.goto(random.randint(350, 600), random.choice(y_cors))
 						sprite2.destroy()
 						print("SHARK AND FIREBALL")
-			
 	
 	# Game over when Distance is 0
 	if player.distance == 0 :
@@ -206,5 +200,5 @@ while True:
 	if game_over:
 		break
 
-	
+	game.print_game_info()
 	
