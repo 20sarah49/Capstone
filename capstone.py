@@ -15,6 +15,7 @@ class Player(spgl.Sprite):
 		self.speed = 0.5
 		self.y_destination = 0
 		self.powerup = 0
+		self.set_image("player.gif", 60, 60)
 				
 	def move_up(self):
 		if self.ycor() < 200:
@@ -36,6 +37,7 @@ class Player(spgl.Sprite):
 		# Move right
 		self.setx(self.xcor() + self.speed)
 		# Distance
+		# self.speed so that the distance decreases at a slower rate when the player collides with seaweed
 		self.distance -= self.speed
 
 
@@ -63,7 +65,13 @@ class Player(spgl.Sprite):
 		canvas.after(2000, self.speed_to_normal)
 		
 	def speed_to_normal(self):
-		self.speed += 0.25	
+		self.speed = 0.5
+		
+	# Speed up 
+	def speedup(self):
+		self.speed += 0.25
+		canvas = spgl.turtle.getcanvas()
+		canvas.after(2000, self.speed_to_normal)
 		
 class Obstacle(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -98,16 +106,44 @@ class Powerup(Obstacle):
 class Seaweed(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
-			
+
+# Wave class
+class Wave(spgl.Sprite):
+	def __init__(self, shape, color, x, y):
+		spgl.Sprite.__init__(self, shape, color, x, y)
+		self.speed = random.randint(-6, -3)
+		self.lt(180)
+		
+	def tick(self):
+			self.move()
+		
+	def move(self):
+		self.fd(self.speed)
+		
+		if self.xcor() >= 380:
+			self.setx(random.randint(-600, -400))
+			y_cors = [-200, 0, 200]
+			self.sety(random.choice(y_cors))
+		
 # Fire ball class	
 class Fireball(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
 		spgl.Sprite.__init__(self, shape, color, x, y)
 		self.speed = 6
 		self.lt(0)
+		self.frame = 0
+		self.frames = ["fireball1.gif", "fireball2.gif", "fireball3.gif"]
 	
 	def tick(self):
 		self.move()
+		
+		# Animate the fireballs
+		self.frame += 1
+		if self.frame > len(self.frames)-1:
+			self.frame = 0
+			
+		self.set_image(self.frames[self.frame], 40, 40)
+		
 		
 	def move(self):
 		self.fd(self.speed)
@@ -125,7 +161,9 @@ player = Player("triangle", "mediumvioletred", -350, 0, 700)
 sharks = []
 powerups = []
 seaweeds = []
+waves = []
 y_cors = [-200, 0, 200]
+
 # Create multiple sprites per class
 for i in range(0,2):
 	shark = Shark("square", "dimgray", random.randint(350, 600), random.choice(y_cors))
@@ -134,9 +172,12 @@ for i in range(0,2):
 	powerups.append(powerup)
 	seaweed = Seaweed("square", "seagreen", random.randint(350, 600), random.choice(y_cors))
 	seaweeds.append(seaweed)
+	wave = Wave("square", "white", random.randint(-600, -350), random.choice(y_cors))
+	waves.append(wave)
+	
 	
 # Create Labels
-distance_label = spgl.Label("Distance From Shore: {}".format(player.distance), "white", -380, 280)
+distance_label = spgl.Label("Distance From Shore: {} // Fireballs: {}".format(player.distance, player.powerup), "white", -380, 280)
 
 # Set Keyboard Bindings
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
@@ -155,11 +196,13 @@ while True:
 		powerup.tick()
 	for seaweed in seaweeds:
 		seaweed.tick()
+	for wave in waves:
+		wave.tick()
 		
 	player.tick()
 	
 	# Update Label 
-	distance_label.update("Distance From Shore: {}".format(player.distance))
+	distance_label.update("Distance From Shore: {} // Fireballs: {}".format(player.distance, player.powerup))
 	
 	# Check for collisions
 	for sprite in game.sprites:
@@ -180,6 +223,12 @@ while True:
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("SEAWEED COLLISION")
 				player.speedlag()
+		
+		if isinstance(sprite, Wave):
+			if game.is_collision(sprite, player):
+				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
+				print("WAVE COLLISION")
+				player.speedup()
 
 	# Check for Power-up and Shark Collisions
 	for sprite1 in game.sprites:
@@ -200,5 +249,5 @@ while True:
 	if game_over:
 		break
 
-	game.print_game_info()
+	#game.print_game_info()
 	
