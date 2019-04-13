@@ -26,7 +26,7 @@ class Player(spgl.Sprite):
 			#self.goto(self.xcor(), 200)
 		
 	def move_down(self):
-		if self.ycor() > -200:
+		if self.ycor() > -200: 
 			#self.sety(self.ycor() - self.speed)
 			self.y_destination -= 200
 		else:
@@ -60,7 +60,7 @@ class Player(spgl.Sprite):
 			
 	# Speed Lag
 	def speedlag(self):
-		self.speed -= 0.25
+		self.speed = 0.1
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
@@ -69,7 +69,7 @@ class Player(spgl.Sprite):
 		
 	# Speed up 
 	def speedup(self):
-		self.speed += 0.25
+		self.speed = 1
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
@@ -98,14 +98,17 @@ class Obstacle(spgl.Sprite):
 class Shark(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)	
+		self.set_image("shark.gif", 40, 40)
 		
 class Powerup(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
+		self.set_image("powerup.gif", 40, 40)
 	
 class Seaweed(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
+		self.set_image("seaweed.gif", 40, 40)
 
 # Wave class
 class Wave(spgl.Sprite):
@@ -157,11 +160,10 @@ class Fireball(spgl.Sprite):
 game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 0)
 
 # Create Sprites
-player = Player("triangle", "mediumvioletred", -350, 0, 700)
+player = Player("triangle", "mediumvioletred", -350, 0, 700.00)
 sharks = []
 powerups = []
 seaweeds = []
-waves = []
 y_cors = [-200, 0, 200]
 
 # Create multiple sprites per class
@@ -172,8 +174,9 @@ for i in range(0,2):
 	powerups.append(powerup)
 	seaweed = Seaweed("square", "seagreen", random.randint(350, 600), random.choice(y_cors))
 	seaweeds.append(seaweed)
-	wave = Wave("square", "white", random.randint(-600, -350), random.choice(y_cors))
-	waves.append(wave)
+	
+wave = Wave("square", "white", random.randint(-600, -350), random.choice(y_cors))
+
 	
 	
 # Create Labels
@@ -196,8 +199,8 @@ while True:
 		powerup.tick()
 	for seaweed in seaweeds:
 		seaweed.tick()
-	for wave in waves:
-		wave.tick()
+
+	wave.tick()
 		
 	player.tick()
 	
@@ -249,5 +252,5 @@ while True:
 	if game_over:
 		break
 
-	#game.print_game_info()
+	game.print_game_info()
 	
