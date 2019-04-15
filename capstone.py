@@ -39,7 +39,8 @@ class Player(spgl.Sprite):
 		# Distance
 		# self.speed so that the distance decreases at a slower rate when the player collides with seaweed
 		self.distance -= self.speed
-		self.distance = int(self.distance)
+		if self.distance%1 == 0:
+			self.distance = int(self.distance)
 
 
 		# Move the player
