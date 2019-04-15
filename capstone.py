@@ -39,6 +39,7 @@ class Player(spgl.Sprite):
 		# Distance
 		# self.speed so that the distance decreases at a slower rate when the player collides with seaweed
 		self.distance -= self.speed
+		self.distance = int(self.distance)
 
 
 		# Move the player
@@ -79,11 +80,8 @@ class Obstacle(spgl.Sprite):
 		self.speed = random.randint(3,6)
 		self.lt(180)
 
-	
 	def tick(self):
 		self.move()
-		
-
 			
 	def move(self):
 		self.fd(self.speed)
@@ -110,16 +108,11 @@ class Seaweed(Obstacle):
 		Obstacle.__init__(self, shape, color, x, y)
 		self.set_image("seaweed.gif", 40, 40)
 
-# Wave class
-class Wave(spgl.Sprite):
+class Wave(Obstacle):
 	def __init__(self, shape, color, x, y):
-		spgl.Sprite.__init__(self, shape, color, x, y)
-		self.speed = random.randint(-6, -3)
-		self.lt(180)
-		
-	def tick(self):
-			self.move()
-		
+		Obstacle.__init__(self, shape, color, x, y)
+		self.setheading(0)
+	
 	def move(self):
 		self.fd(self.speed)
 		
