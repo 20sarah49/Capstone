@@ -2,10 +2,14 @@
 # Requires SPGL Version 0.8 or Above
 # SPGL Documentation on Github: https://wynand1004.github.io/SPGL
 # Use this as the starting point for your own games
+# Sounds from soundbible.com
 
 # Import SPGL
 import spgl
 import random 
+
+# Game Attributes
+
 
 # Create Classes
 class Player(spgl.Sprite):
@@ -21,6 +25,7 @@ class Player(spgl.Sprite):
 		if self.ycor() < 200:
 			#self.goto(self.xcor(), self.ycor()+200)
 			self.y_destination += 200
+			game.play_sound("water-drop.wav")
 		else:
 			self.y_destination = 200
 			#self.goto(self.xcor(), 200)
@@ -29,6 +34,7 @@ class Player(spgl.Sprite):
 		if self.ycor() > -200: 
 			#self.sety(self.ycor() - self.speed)
 			self.y_destination -= 200
+			game.play_sound("water-drop.wav")
 		else:
 			#self.goto(self.xcor(), -200)
 			self.y_destination = -200
@@ -42,7 +48,6 @@ class Player(spgl.Sprite):
 		if self.distance%1 == 0:
 			self.distance = int(self.distance)
 
-
 		# Move the player
 		if self.ycor() < self.y_destination:
 			self.sety(self.ycor() + 10)
@@ -54,6 +59,7 @@ class Player(spgl.Sprite):
 	def shoot_fireball(self):
 		if self.powerup > 0:
 			fireball = Fireball("circle", "orangered", player.xcor(), player.ycor())
+			game.play_sound("shooting-star.wav")
 			self.powerup -= 1
 			print(self.powerup)
 		
@@ -62,16 +68,16 @@ class Player(spgl.Sprite):
 			
 	# Speed Lag
 	def speedlag(self):
-		self.speed = 0.1
+		self.speed = 0.5
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
 	def speed_to_normal(self):
-		self.speed = 0.5
+		self.speed = 1
 		
 	# Speed up 
 	def speedup(self):
-		self.speed = 1
+		self.speed = 1.5
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
@@ -92,6 +98,7 @@ class Obstacle(spgl.Sprite):
 			self.setx(random.randint(400, 600))
 			y_cors = [-200, 0, 200]
 			self.sety(random.choice(y_cors))
+			self.speed = random.randint(3,6)
 	
 #Child Classes
 class Shark(Obstacle):
@@ -113,6 +120,7 @@ class Wave(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
 		self.setheading(0)
+		self.set_image("wave.gif", 40, 40)
 	
 	def move(self):
 		self.fd(self.speed)
@@ -121,6 +129,7 @@ class Wave(Obstacle):
 			self.setx(random.randint(-600, -400))
 			y_cors = [-200, 0, 200]
 			self.sety(random.choice(y_cors))
+			self.speed = random.randint(3,6)
 		
 # Fire ball class	
 class Fireball(spgl.Sprite):
@@ -148,10 +157,8 @@ class Fireball(spgl.Sprite):
 		if self.xcor() >= 380:
 			self.destroy()
 
-# Create Functions
-
 # Initial Game setup
-game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 0)
+game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 5)
 
 # Create Sprites
 player = Player("triangle", "mediumvioletred", -350, 0, 700.00)
@@ -180,6 +187,9 @@ distance_label = spgl.Label("Distance From Shore: {} // Fireballs: {}".format(pl
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
 game.set_keyboard_binding(spgl.KEY_DOWN, player.move_down)
 game.set_keyboard_binding(spgl.KEY_SPACE, player.shoot_fireball)
+
+# Set background image
+game.set_background("bg.gif")
 
 while True:
 	game_over = False
@@ -238,8 +248,8 @@ while True:
 						print("SHARK AND FIREBALL")
 	
 	# Game over when Distance is 0
-	if player.distance == 0 :
-		print("GAME CLEAR")
+	if player.distance <= 0 :
+		print("GAME CLEAR: Distance is zero")
 		game_over = True
 
 	# End game
