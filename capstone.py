@@ -7,9 +7,7 @@
 # Import SPGL
 import spgl
 import random 
-
-# Game Attributes
-
+import time
 
 # Create Classes
 class Player(spgl.Sprite):
@@ -58,6 +56,7 @@ class Player(spgl.Sprite):
 	# Fireball shoot function
 	def shoot_fireball(self):
 		if self.powerup > 0:
+			# Create fireball
 			fireball = Fireball("circle", "orangered", player.xcor(), player.ycor())
 			game.play_sound("shooting-star.wav")
 			self.powerup -= 1
@@ -69,6 +68,7 @@ class Player(spgl.Sprite):
 	# Speed Lag
 	def speedlag(self):
 		self.speed = 0.5
+		# Lag for .2 seconds
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
@@ -78,6 +78,7 @@ class Player(spgl.Sprite):
 	# Speed up 
 	def speedup(self):
 		self.speed = 1.5
+		# Speed up for .2 seconds
 		canvas = spgl.turtle.getcanvas()
 		canvas.after(2000, self.speed_to_normal)
 		
@@ -182,6 +183,7 @@ wave = Wave("square", "white", random.randint(-600, -350), random.choice(y_cors)
 	
 # Create Labels
 distance_label = spgl.Label("Distance From Shore: {} // Fireballs: {}".format(player.distance, player.powerup), "white", -380, 280)
+final_label = spgl.Label("", "red", -50, 0)
 
 # Set Keyboard Bindings
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
@@ -216,6 +218,7 @@ while True:
 		if isinstance(sprite, Shark):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
+				final_label.update("GAME OVER: SHARK COLLISION")
 				print("GAME OVER: SHARK COLLISION")
 				game_over = True
 
@@ -250,11 +253,12 @@ while True:
 	# Game over when Distance is 0
 	if player.distance <= 0 :
 		print("GAME CLEAR: Distance is zero")
+		final_label.update("GAME CLEAR! CONGRATULATIONS")
 		game_over = True
 
 	# End game
 	if game_over:
+		time.sleep(2.0)
 		break
 
 	game.print_game_info()
-	
