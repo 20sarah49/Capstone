@@ -3,6 +3,7 @@
 # SPGL Documentation on Github: https://wynand1004.github.io/SPGL
 # Use this as the starting point for your own games
 # Sounds from soundbible.com
+# Background music from bensound.com
 
 # Import SPGL
 import spgl
@@ -117,6 +118,10 @@ class Seaweed(Obstacle):
 		Obstacle.__init__(self, shape, color, x, y)
 		self.set_image("seaweed.gif", 40, 40)
 
+class Fishingnet(Obstacle):
+	def __init__(self, shape, color, x, y):
+		Obstacle.__init__(self, shape, color, x, y)
+
 class Wave(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
@@ -166,6 +171,7 @@ player = Player("triangle", "mediumvioletred", -350, 0, 700.00)
 sharks = []
 powerups = []
 seaweeds = []
+fishingnets = []
 y_cors = [-200, 0, 200]
 
 # Create multiple sprites per class
@@ -193,8 +199,13 @@ game.set_keyboard_binding(spgl.KEY_SPACE, player.shoot_fireball)
 # Set background image
 game.set_background("bg.gif")
 
+play_again_title = ""
+
+game.play_sound("bensound-jazzyfrenchy.mp3", 105)
+
 while True:
 	game_over = False
+	level2_access = False
     # Call the game tick method
 	game.tick()
 
@@ -205,6 +216,8 @@ while True:
 		powerup.tick()
 	for seaweed in seaweeds:
 		seaweed.tick()
+	for fishingnet in fishingnets:
+		fishingnet.tick()
 
 	wave.tick()
 		
@@ -218,8 +231,8 @@ while True:
 		if isinstance(sprite, Shark):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
-				final_label.update("GAME OVER: SHARK COLLISION")
 				print("GAME OVER: SHARK COLLISION")
+				play_again_title = "GAME OVER: SHARK COLLISION"
 				game_over = True
 
 		if isinstance(sprite, Powerup):
@@ -239,6 +252,15 @@ while True:
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
 				print("WAVE COLLISION")
 				player.speedup()
+				
+		if isinstance(sprite, Fishingnet):
+			if game.is_collision(sprite, player):
+				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
+				print("FISHINGNET COLLISION")
+				player.setx(-350)
+				player.powerup = 0
+				player.distance = 700.0
+				
 
 	# Check for Power-up and Shark Collisions
 	for sprite1 in game.sprites:
@@ -253,12 +275,28 @@ while True:
 	# Game over when Distance is 0
 	if player.distance <= 0 :
 		print("GAME CLEAR: Distance is zero")
-		final_label.update("GAME CLEAR! CONGRATULATIONS")
+		play_again_title = "GAME CLEAR: CONGRATULATIONS"
 		game_over = True
+		level2_access = True
 
 	# End game
 	if game_over:
-		time.sleep(2.0)
-		break
+		play_again = game.ask_yes_no(play_again_title, "Would you like to play again?")
+		if play_again:
+			player.setx(-350)
+			player.powerup = 0
+			player.distance = 700.0
+			if level2_access:
+				next_level = game.ask_yes_no("Next Level?", "Would you like to go to the next level?")
+				if next_level:
+					for i in range(0,2):
+						fishingnet = Fishingnet("square", "dimgray", random.randint(350, 600), random.choice(y_cors))
+						fishingnets.append(fishingnet)
+					continue
+				else:
+					continue
+		else:
+			game.stop_all_sounds()
+			break
 
 	game.print_game_info()
