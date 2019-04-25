@@ -18,7 +18,10 @@ class Player(spgl.Sprite):
 		self.speed = 0.5
 		self.y_destination = 0
 		self.powerup = 0
-		self.set_image("player.gif", 60, 60)
+		self.frame = 0
+		self.frame_no = 0 
+		self.frames = ["player1.gif", "player2.gif"]
+		self.set_image(self.frames[self.frame_no], 80, 40)
 				
 	def move_up(self):
 		if self.ycor() < 200:
@@ -52,6 +55,20 @@ class Player(spgl.Sprite):
 			self.sety(self.ycor() + 10)
 		elif self.ycor() > self.y_destination:
 			self.sety(self.ycor() - 10)
+			
+		# Animate
+		self.frame += 1
+		if self.frame == 15:
+			self.frame_no = 0
+			self.set_image(self.frames[self.frame_no], 80, 40)
+		elif self.frame == 30:
+			self.frame_no = 1
+			self.set_image(self.frames[self.frame_no], 80, 40)
+		
+		if self.frame > 30:
+			self.frame = 0
+		
+		
 			
 		
 	# Fireball shoot function
@@ -116,11 +133,22 @@ class Powerup(Obstacle):
 class Seaweed(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
-		self.set_image("seaweed.gif", 40, 40)
+		self.frame = 0
+		self.frames = ["seaweed1.gif", "seaweed2.gif", "seaweed3.gif"]
+		
+	def tick(self):
+		self.move()
+
+		self.frame += 1
+		if self.frame > len(self.frames)-1:
+			self.frame = 0
+			
+		self.set_image(self.frames[self.frame], 40, 40)
 
 class Fishingnet(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
+		self.set_image("fishingnet.gif", 40, 40)
 
 class Wave(Obstacle):
 	def __init__(self, shape, color, x, y):
@@ -164,7 +192,7 @@ class Fireball(spgl.Sprite):
 			self.destroy()
 
 # Initial Game setup
-game = spgl.Game(800, 600, "blue", "Capstone Project by Sarah T-B", 5)
+game = spgl.Game(800, 600, "blue", "Stuck at Sea! by Sarah T-B", 0)
 
 # Create Sprites
 player = Player("triangle", "mediumvioletred", -350, 0, 700.00)
@@ -235,25 +263,25 @@ while True:
 				play_again_title = "GAME OVER: SHARK COLLISION"
 				game_over = True
 
-		if isinstance(sprite, Powerup):
+		elif isinstance(sprite, Powerup):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("POWERUP COLLISION")
 				player.powerup = 5
 
-		if isinstance(sprite, Seaweed):
+		elif isinstance(sprite, Seaweed):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				print("SEAWEED COLLISION")
 				player.speedlag()
 		
-		if isinstance(sprite, Wave):
+		elif isinstance(sprite, Wave):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
 				print("WAVE COLLISION")
 				player.speedup()
 				
-		if isinstance(sprite, Fishingnet):
+		elif isinstance(sprite, Fishingnet):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
 				print("FISHINGNET COLLISION")
@@ -298,5 +326,5 @@ while True:
 		else:
 			game.stop_all_sounds()
 			break
-
+			
 	game.print_game_info()
