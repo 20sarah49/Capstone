@@ -139,6 +139,7 @@ class Seaweed(Obstacle):
 	def tick(self):
 		self.move()
 
+		# Animate
 		self.frame += 1
 		if self.frame > len(self.frames)-1:
 			self.frame = 0
@@ -149,6 +150,18 @@ class Fishingnet(Obstacle):
 	def __init__(self, shape, color, x, y):
 		Obstacle.__init__(self, shape, color, x, y)
 		self.set_image("fishingnet.gif", 40, 40)
+		self.frame = 0
+		self.frames = ["fishingnet.gif", "fishingnet2.gif"]
+		
+	def tick(self):
+		self.move()
+		
+		# Animate
+		self.frame += 1
+		if self.frame > len(self.frames)-1:
+			self.frame = 0
+			
+		self.set_image(self.frames[self.frame], 40, 40)
 
 class Wave(Obstacle):
 	def __init__(self, shape, color, x, y):
@@ -159,6 +172,7 @@ class Wave(Obstacle):
 	def move(self):
 		self.fd(self.speed)
 		
+		# Make sure it comes back on screen
 		if self.xcor() >= 380:
 			self.setx(random.randint(-600, -400))
 			y_cors = [-200, 0, 200]
@@ -188,6 +202,7 @@ class Fireball(spgl.Sprite):
 	def move(self):
 		self.fd(self.speed)
 		
+		# Destroy Fireball once off screen
 		if self.xcor() >= 380:
 			self.destroy()
 
@@ -253,38 +268,35 @@ while True:
 	
 	# Update Label 
 	distance_label.update("Distance From Shore: {} // Fireballs: {}".format(player.distance, player.powerup))
+	if player.distance < 0:
+		distance_label.update("Distance From Shore: 0 // Fireballs: {}".format(player.distance, player.powerup))
 	
 	# Check for collisions
 	for sprite in game.sprites:
 		if isinstance(sprite, Shark):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
-				print("GAME OVER: SHARK COLLISION")
 				play_again_title = "GAME OVER: SHARK COLLISION"
 				game_over = True
 
 		elif isinstance(sprite, Powerup):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
-				print("POWERUP COLLISION")
 				player.powerup = 5
 
 		elif isinstance(sprite, Seaweed):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
-				print("SEAWEED COLLISION")
 				player.speedlag()
 		
 		elif isinstance(sprite, Wave):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
-				print("WAVE COLLISION")
 				player.speedup()
 				
 		elif isinstance(sprite, Fishingnet):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
-				print("FISHINGNET COLLISION")
 				player.setx(-350)
 				player.powerup = 0
 				player.distance = 700.0
@@ -298,16 +310,14 @@ while True:
 					if game.is_collision(sprite1, sprite2):
 						sprite1.goto(random.randint(350, 600), random.choice(y_cors))
 						sprite2.destroy()
-						print("SHARK AND FIREBALL")
 	
 	# Game over when Distance is 0
 	if player.distance <= 0 :
-		print("GAME CLEAR: Distance is zero")
 		play_again_title = "GAME CLEAR: CONGRATULATIONS"
 		game_over = True
 		level2_access = True
 
-	# End game
+	# End game + Next Level
 	if game_over:
 		play_again = game.ask_yes_no(play_again_title, "Would you like to play again?")
 		if play_again:
