@@ -294,6 +294,7 @@ while True:
 		elif isinstance(sprite, Fishingnet):
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
+				game.play_sound("spin_jump-Brandino480-2020916281.wav")
 				player.setx(-350)
 				player.powerup = 0
 				player.distance = 700.0
