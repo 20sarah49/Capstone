@@ -66,10 +66,7 @@ class Player(spgl.Sprite):
 			self.set_image(self.frames[self.frame_no], 80, 40)
 		
 		if self.frame > 30:
-			self.frame = 0
-		
-		
-			
+			self.frame = 0		
 		
 	# Fireball shoot function
 	def shoot_fireball(self):
@@ -208,6 +205,7 @@ class Fireball(spgl.Sprite):
 
 # Initial Game setup
 game = spgl.Game(800, 600, "blue", "Stuck at Sea! by Sarah T-B", 0)
+game.level = 1
 
 # Create Sprites
 player = Player("triangle", "mediumvioletred", -350, 0, 700.00)
@@ -228,11 +226,9 @@ for i in range(0,2):
 	
 wave = Wave("square", "white", random.randint(-600, -350), random.choice(y_cors))
 
-	
-	
 # Create Labels
 distance_label = spgl.Label("Distance From Shore: {} // Fireballs: {}".format(player.distance, player.powerup), "white", -380, 280)
-final_label = spgl.Label("", "red", -50, 0)
+distance_label.set_font_size(15)
 
 # Set Keyboard Bindings
 game.set_keyboard_binding(spgl.KEY_UP, player.move_up)
@@ -277,6 +273,7 @@ while True:
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				play_again_title = "GAME OVER: SHARK COLLISION"
+				game.play_sound("dun_dun_dun-Delsym-719755295.wav")
 				game_over = True
 
 		elif isinstance(sprite, Powerup):
@@ -324,8 +321,9 @@ while True:
 			player.setx(-350)
 			player.powerup = 0
 			player.distance = 700.0
-			if level2_access:
+			if level2_access and game.level == 1:
 				next_level = game.ask_yes_no("Next Level?", "Would you like to go to the next level?")
+				game.level = 2
 				if next_level:
 					for i in range(0,2):
 						fishingnet = Fishingnet("square", "dimgray", random.randint(350, 600), random.choice(y_cors))
