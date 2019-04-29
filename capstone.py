@@ -286,6 +286,7 @@ while True:
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				player.speedlag()
+				game.play_sound("seaweed.wav")
 		
 		elif isinstance(sprite, Wave):
 			if game.is_collision(sprite, player):
