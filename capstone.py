@@ -204,7 +204,7 @@ class Fireball(spgl.Sprite):
 			self.destroy()
 
 # Initial Game setup
-game = spgl.Game(800, 600, "blue", "Stuck at Sea! by Sarah T-B", 0)
+game = spgl.Game(800, 600, "blue", "Stuck at Sea! by Sarah T-B", 3)
 game.level = 1
 
 # Create Sprites
@@ -280,6 +280,7 @@ while True:
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(350, 600), random.choice(y_cors))
 				player.powerup = 5
+				game.play_sound("Robot_blip-Marianne_Gagnon-120342607.wav")
 
 		elif isinstance(sprite, Seaweed):
 			if game.is_collision(sprite, player):
@@ -290,6 +291,7 @@ while True:
 			if game.is_collision(sprite, player):
 				sprite.goto(random.randint(-600, -350), random.choice(y_cors))
 				player.speedup()
+				game.play_sound("wave.wav")
 				
 		elif isinstance(sprite, Fishingnet):
 			if game.is_collision(sprite, player):
