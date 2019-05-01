@@ -2,7 +2,9 @@
 # Requires SPGL Version 0.8 or Above
 # SPGL Documentation on Github: https://wynand1004.github.io/SPGL
 # Use this as the starting point for your own games
-# Sounds from soundbible.com
+
+# STUCK AT SEA! by Sarah Takeda-Byrne: ICP Final Capstone Project
+# Sound effects from soundbible.com
 # Background music from bensound.com
 
 # Import SPGL
@@ -338,5 +340,3 @@ while True:
 		else:
 			game.stop_all_sounds()
 			break
-			
-	game.print_game_info()
