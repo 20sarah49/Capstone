@@ -155,7 +155,7 @@ class Fishingnet(Obstacle):
 	def tick(self):
 		self.move()
 		
-		# Animate
+		# Animate (Over-riding parent class)
 		self.frame += 1
 		if self.frame > len(self.frames)-1:
 			self.frame = 0
@@ -169,6 +169,7 @@ class Wave(Obstacle):
 		self.set_image("wave.gif", 40, 40)
 	
 	def move(self):
+		# Over-riding Parent Class Functions 
 		self.fd(self.speed)
 		
 		# Make sure it comes back on screen
