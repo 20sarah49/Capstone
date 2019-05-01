@@ -10,7 +10,6 @@
 # Import SPGL
 import spgl
 import random 
-import time
 
 # Create Classes
 class Player(spgl.Sprite):
